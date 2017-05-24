@@ -45,6 +45,9 @@ The cluster consists of a "head" node which is used to log onto the cluster and 
 
 ## Logging on to the Cluster
 
+The cluster is named !(images/server.png) and can be logged onto through a secure shell (ssh) interface using a command such as !(images/ssh.png). Note however that the cluster is only accessible from within Trinity's firewall.
+
+The logon credentials are not the same as those for other Linux systems on campus. To have an account made on the cluster please contact the ITS helpdesk or the cluster administrators.
 
 ## Storage on the Cluster
 
