@@ -51,6 +51,30 @@ The logon credentials are not the same as those for other Linux systems on campu
 
 ## Storage on the Cluster
 
+Several storage systems are mounted to the cluster, however not all storage available on the head/logon node is available on the remote nodes. In general, *all working files on the cluster should be kept in your user home directory, or in a portion of the data directory that you have access to*.
+
+### Home directories
+
+The home directories on the cluster are located at `/home/username`. Note that this is different than on the CS departmental Linux systems, which are located at `/users/username`. However, the CS home directories are also mounted on the cluster to the **head node only** at `/users/username` to enable copying files back and forth between the systems.
+
+**IMPORTANT:** *All jobs submitted to the cluster should typically be run from your cluster home directory, e.g. `/home/username`. Jobs create files containing logs and error messages into the folder that the command was run from, meaning that you must have read/write access and the folder must be mounted to the remote nodes.*
+
+**IMPORTANT:** *The amount of space available in the home directories is limited. __No large files should be kept in the home directories.__ Instead, they should be kept in an appropriate folder in the data directories.*
+
+### Data directories
+
+The large RAID6 shared storage for the cluster is mounted to both the head and remote nodes at `/data`. Sub-folders of `/data` will be created for each faculty member or lab head using the cluster, such as `/data/namelab` for which the lab head will have ownership and privileges. Lab heads may then create further subfolders and assign permissions as appropriate.
+
+**IMPORTANT:** *All large data files should be maintained within the `/data` directory.*
+
+### Additional directories (only mounted to the head node)
+
+Some additional file systems are also mounted to the head node, but **not to the remote nodes**, meaning that submitted jobs cannot refer to files in these directories. These filesystems are mounted to the head node to enable files to be transferred easily to or from the cluster and other systems on campus. These additional mounts include:
+- `/users` corresponding to the CS Linux home directories
+- `/disk1 /disk2 /disk3` corresponding to mounts in the Hibbs lab storage
+- several other miscellaneous directories
+
+**IMPORTANT:** *Files in these folders are unavailable to the remote nodes, and so cannot be referred to by any jobs submitted to the cluster.*
 
 ## Submitting jobs on the Cluster
 
