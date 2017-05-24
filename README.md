@@ -8,12 +8,40 @@ Trinity maintains a 42 node HPC (high performance computing) cluster available f
 
 The cluster consists of a "head" node which is used to log onto the cluster and is where all jobs are submitted. There are also several "worker" or "remote" nodes where the bulk of computation should occur. This includes regular CPU-focused nodes, and specialized nodes with GPUs and a node with a large amount of RAM.
 
-The head node specs are:
-* Dual Intel Xeon ES-2680 v3
-  * 24 cores total (12 per CPU)
-  * 2.5 GHz clock speed
-* 64 GB of RAM
+* The single head/login node contains:
+  * Dual Intel Xeon ES-2695 v4
+    * 36 cores total (18 per CPU)
+    * 2.1 GHz clock speed
+  * 64 GB of DDR4-2133 ECC RAM
 
+* 36 CPU-focused nodes each contain:
+  * Dual Intel Xeon ES-2695 v4
+    * 36 cores total (18 per CPU)
+    * 2.1 GHz clock speed
+  * 64 GB of DDR4-2133 ECC RAM
+
+* 1 high memory node contains:
+  * Dual Intel Xeon ES-2695 v4
+    * 36 cores total (18 per CPU)
+    * 2.1 GHz clock speed
+  * 768 GB of DDR4-2133 ECC RAM
+
+* 5 GPU-focused nodes each contain:
+  * Dual Intel Xeon ES-2695 v4
+    * 36 cores total (18 per CPU)
+    * 2.1 GHz clock speed
+  * 64 GB of DDR4-2133 ECC RAM
+  * 2x NVIDIA Tesla K80m GPUs
+    * 9984 CUDA cores (4992 per GPU)
+    * 48 GB of GDDR5 ECC memory (24 GB per GPU)
+
+* 1 Storage server contains:
+  * Dual Intel Xeon ES-2620 v4
+    * 16 cores total (8 per CPU)
+    * 2.1 GHz clock speed
+  * 64 GB of DDR4-2133 ECC RAM
+  * 216 TB of raw HDD Storage
+    * Configured as 100 TB usable RAID 6 Storage
 
 ## Logging on to the Cluster
 
