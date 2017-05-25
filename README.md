@@ -80,8 +80,7 @@ Some additional file systems are also mounted to the head node, but **not to the
 
 If administrative privileges are not required for a piece of software to be installed and if the software is unlikely to be used by multiple users, then we encourage you to build or install that software within your home directory or a `/data` directory that you have access to.
 
-If software requires administrative privileges to be installed, or if the software is likely to be useful to a broad number of users, contact a system administrator (currently npape and mhibbs) for installation
-
+If software requires administrative privileges to be installed, or if the software is likely to be useful to a broad number of users, contact a system administrator (currently npape and mhibbs) for installation.
 
 ## Submitting jobs on the Cluster
 
@@ -107,7 +106,7 @@ For cluster submission scripts, you should include a series of comments, called 
 * There are many additional PBS directives which you can read about in the [documentation](http://docs.adaptivecomputing.com/torque/4-0-2/Content/topics/commands/qsub.htm).
 * It is possible to specify these options (e.g. `-N job_name`) from the command line when you submit your job, but I recommend keeping them in your script files to document your job submission history and minimize errors.
 
-An example of a job submission script that runs a python script on a single node using 36 cores, with a maximum runtime of 72 hours is below. This file also gives the job the name `cifar10_job` and requests emails to be sent to somebody@gmail.com when the job ends normally or abnormally terminates.
+An example of a job submission script that runs a python script on a single node using 36 cores, with a maximum runtime of 72 hours is below. This file also gives the job the name `cifar10_job` and requests emails to be sent to somebody[at]gmail.com when the job ends normally or abnormally terminates.
 ```
 #!/bin/sh
 
