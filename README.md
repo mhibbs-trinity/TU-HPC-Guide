@@ -80,7 +80,7 @@ Some additional file systems are also mounted to the head node, but **not to the
 
 If administrative privileges are not required for a piece of software to be installed and if the software is unlikely to be used by multiple users, then we encourage you to build or install that software within your home directory or a `/data` directory that you have access to.
 
-If software requires administrative privileges to be installed, or if the software is likely to be useful to a broad number of users,
+If software requires administrative privileges to be installed, or if the software is likely to be useful to a broad number of users, contact a system administrator (currently npape and mhibbs) for installation
 
 
 ## Submitting jobs on the Cluster
@@ -95,9 +95,35 @@ Shell scripts are plain text files that contain Linux bash commands. These comma
 
 For cluster submission scripts, you should include a series of comments, called PBS directives, at the beginning of the file (before the normal Linux commands). All PBS directives begin with `#PBS`, and they are used to indicate how many resources a job requires, gives the job a name, and can optionally set up e-mail notifications for the job.
 
-* `#PBS -N job_name` is used 
+* `#PBS -N job_name` is used to specify a name for the job, which is used in several other places
+* `#PBS -l nodes...` is used with additional options to specify the number and types of nodes requested, some examples are:
+  * `#PBS -l nodes=1:ppn=1` requests a single core on a single node
+  * `#PBS -l nodes=2:ppn=8` requests 2 nodes, and 8 cores on each node
+  * `#PBS -l nodes=1:gpus=2` requests a single node with 2 GPUs
+  * For the above examples, always begin with the number of nodes requested, optionally followed by the number of cores on each node (`ppn`) and the number of GPUs (`gpus`). If ppn is not specified, it defaults to 1. If gpus is not specified it defaults to 0.
+* `#PBS -l walltime=72:00:00` is used to request a maximum length of time to allow the job to run, called the "wall clock time" or just "walltime". This example requests up to 72 hours of runtime. If no walltime is specified, the default walltime is 1 hour. So without specifying a walltime, if your job takes longer than 1 hour to run, it will be terminated after that hour. The maximum possible walltime that can be requested is currently limited to 168 hours (1 week). If you have a job that needs more than 1 week to run, please contact the administrators.
+* `#PBS -M email@address.com` is used to specify an email address to send status updates for this job.
+* `#PBS -m abe` is used to specify when to send emails related to this job. If `a` is included after the -m option, email is sent if the job is aborted, with `b` email is sent when a job begins, and with `e` email is sent when a job ends. Any combination of `a`, `b`, and `e` may be specified.
+* There are many additional PBS directives which you can read about in the [documentation](http://docs.adaptivecomputing.com/torque/4-0-2/Content/topics/commands/qsub.htm).
+* It is possible to specify these options (e.g. `-N job_name`) from the command line when you submit your job, but I recommend keeping them in your script files to document your job submission history and minimize errors.
 
+An example of a job submission script that runs a tool named bowtie2 on a single node using 8 cores, with a maximum runtime of 4 hours is below. This file also gives the job the name `bowtie_job` and requests emails to be sent to somebody@gmail.com when the job ends normally or abnormally terminates.
+```
+#!/bin/sh
 
+##Place PBS directives here
+#PBS -N bowtie_job
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=4:00:00
+#PBS -M somebody@gmail.com
+#PBS -m ae
 
+##Place Linux commands to run on the remote node here
+bowtie2 -p 8 /data/path/to/file/dna.fq -S /data/path/to/file/output.sam
+```
+
+### Using `qsub` to submit a shell script to the job queue system
+
+Once you have created a shell script containing your
 
 ## Maintenance of jobs on the Cluster
