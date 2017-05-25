@@ -51,13 +51,13 @@ The logon credentials are not the same as those for other Linux systems on campu
 
 ## Storage on the Cluster
 
-Several storage systems are mounted to the cluster, however not all storage available on the head/logon node is available on the remote nodes. In general, *all working files on the cluster should be kept in your user home directory, or in a portion of the data directory that you have access to*.
+Several storage systems are mounted to the cluster, however not all storage available on the head/logon node is available on the remote nodes. In general, *all working files on the cluster should be kept in your user home directory or in a portion of the data directory that you have access to*.
 
 ### Home directories
 
 The home directories on the cluster are located at `/home/username`. Note that this is different than on the CS departmental Linux systems, which are located at `/users/username`. However, the CS home directories are also mounted on the cluster to the **head node only** at `/users/username` to enable copying files back and forth between the systems.
 
-**IMPORTANT:** *All jobs submitted to the cluster should typically be run from your cluster home directory, e.g. `/home/username`. Jobs create files containing logs and error messages into the folder that the command was run from, meaning that you must have read/write access and the folder must be mounted to the remote nodes.*
+**IMPORTANT:** *All jobs submitted to the cluster should typically be run from your cluster home directory, e.g. `/home/username`. Jobs create files containing logs and error messages into the folder that the command was run from, meaning that you must have read/write access and the folder must be mounted to the remote nodes. Even if you have write access to a folder in the data directories and you launch the job from there, the queue system will generate an error when it tries to write the log files there. So, __submit all of your jobs from within your home directory__.*
 
 **IMPORTANT:** *The amount of space available in the home directories is limited. __No large files should be kept in the home directories.__ Instead, they should be kept in an appropriate folder in the data directories.*
 
@@ -76,7 +76,28 @@ Some additional file systems are also mounted to the head node, but **not to the
 
 **IMPORTANT:** *Files in these folders are unavailable to the remote nodes, and so cannot be referred to by any jobs submitted to the cluster.*
 
+## Installing software on the Cluster
+
+If administrative privileges are not required for a piece of software to be installed and if the software is unlikely to be used by multiple users, then we encourage you to build or install that software within your home directory or a `/data` directory that you have access to.
+
+If software requires administrative privileges to be installed, or if the software is likely to be useful to a broad number of users,
+
+
 ## Submitting jobs on the Cluster
+
+We use the [TORQUE](http://www.adaptivecomputing.com/products/open-source/torque/) resource management software to submit, schedule, and monitor jobs submitted to the cluster. This software is open source, and has several online tutorials and instruction manuals. TORQUE is built upon the [OpenPBS](https://en.wikipedia.org/wiki/Portable_Batch_System) project, which is no longer in development, but much of the syntax and tools of TORQUE derive from this origin.
+
+In general, to run a job on the cluster, you will need to create a bash shell script file containing configuration information for your job, including how many resources your job will consume, and the command line statements that will run your job. Once this script file is created, the job can be submitted using the `qsub` command as described below.
+
+### Creating a job submission bash shell script
+
+Shell scripts are plain text files that contain Linux bash commands. These commands are executed from top to bottom in order. Modifiers such as I/O redirection (e.g. `> outfile`), piping, and running in the background with `&` behave as normal. Though not required, by convention these files often end in a `.sh` extension. These files should begin with the line `#!/usr/bin/sh`.
+
+For cluster submission scripts, you should include a series of comments, called PBS directives, at the beginning of the file (before the normal Linux commands). All PBS directives begin with `#PBS`, and they are used to indicate how many resources a job requires, gives the job a name, and can optionally set up e-mail notifications for the job.
+
+* `#PBS -N job_name` is used 
+
+
 
 
 ## Maintenance of jobs on the Cluster
