@@ -91,7 +91,7 @@ In general, to run a job on the cluster, you will need to create a bash shell sc
 
 ### Creating a job submission bash shell script
 
-Shell scripts are plain text files that contain Linux bash commands. These commands are executed from top to bottom in order. Modifiers such as I/O redirection (e.g. `> outfile`), piping, and running in the background with `&` behave as normal. Though not required, by convention these files often end in a `.sh` extension. These files should begin with the line `#!/usr/bin/sh`.
+Shell scripts are plain text files that contain Linux bash commands. These commands are executed from top to bottom in order. Modifiers such as I/O redirection (e.g. `> outfile`), piping, and running in the background with `&` behave as normal. However, running a command in the background with `&` will cause the script to terminate, leading the job submission queue to think that the job is done; so generally don't end lines of code in these files with `&`. Though not required, by convention these files often end in a `.sh` extension. These files should begin with the line `#!/usr/bin/sh`.
 
 For cluster submission scripts, you should include a series of comments, called PBS directives, at the beginning of the file (before the normal Linux commands). All PBS directives begin with `#PBS`, and they are used to indicate how many resources a job requires, gives the job a name, and can optionally set up e-mail notifications for the job.
 
@@ -107,23 +107,63 @@ For cluster submission scripts, you should include a series of comments, called 
 * There are many additional PBS directives which you can read about in the [documentation](http://docs.adaptivecomputing.com/torque/4-0-2/Content/topics/commands/qsub.htm).
 * It is possible to specify these options (e.g. `-N job_name`) from the command line when you submit your job, but I recommend keeping them in your script files to document your job submission history and minimize errors.
 
-An example of a job submission script that runs a tool named bowtie2 on a single node using 8 cores, with a maximum runtime of 4 hours is below. This file also gives the job the name `bowtie_job` and requests emails to be sent to somebody@gmail.com when the job ends normally or abnormally terminates.
+An example of a job submission script that runs a python script on a single node using 36 cores, with a maximum runtime of 72 hours is below. This file also gives the job the name `cifar10_job` and requests emails to be sent to somebody@gmail.com when the job ends normally or abnormally terminates.
 ```
 #!/bin/sh
 
 ##Place PBS directives here
-#PBS -N bowtie_job
-#PBS -l nodes=1:ppn=8
-#PBS -l walltime=4:00:00
+#PBS -N cifar10_job
+#PBS -l nodes=1:ppn=36
+#PBS -l walltime=72:00:00
 #PBS -M somebody@gmail.com
 #PBS -m ae
 
 ##Place Linux commands to run on the remote node here
-bowtie2 -p 8 /data/path/to/file/dna.fq -S /data/path/to/file/output.sam
+python /data/path/to/files/cifar10_cnn.py
 ```
 
 ### Using `qsub` to submit a shell script to the job queue system
 
-Once you have created a shell script containing your
+Once you have created a shell script containing your PBS directives and Linux commands, you can submit the file to be run on the cluster using a the `qsub` command, such as:
+```
+qsub script_name.sh
+```
 
-## Maintenance of jobs on the Cluster
+You should run this command from within your home directory (or a sub-folder in your home directory). Right after such a command is run, your job will be assigned a unique ID number, which can be important to know for later. For example, after running a script named run_keras_cifar10.sh, the job was assigned the ID 65:
+```
+[mhibbs@leviosa ~]$ qsub run_keras_cifar10.sh
+65.leviosa.cs.trinity.edu
+```
+
+When a job is completed, either due to finishing normally or because of early termination, the results of STDOUT and STDERR will be in two files in the directory the job was submitted from. In the above case, the job was given the name `cifar10_job` through PBS directives and received the ID of 65. So the STDOUT will be contained in a file named `cifar10_job.o65`, and the STDERR will be in a file named `cifar10_job.e65`. These files will be created even if no output occurs (the files will just be empty then).
+
+## Monitoring submitted jobs
+
+You can see the status of the jobs that you have submitted to the cluster using the `qstat` command. Here is an example output:
+```
+[mhibbs@leviosa ~]$ qstat
+Job ID                    Name             User            Time Use S Queue
+------------------------- ---------------- --------------- -------- - -----
+63.leviosa                 cifar10_job      mhibbs          00:00:00 C batch
+64.leviosa                 job_name         mhibbs          00:00:00 C batch
+65.leviosa                 cifar10_job      mhibbs           2:16:40 R batch
+```
+
+The table output by `qstat` lists all of your currently running or queued jobs, and recently completed jobs. The job ID, job name, and submitting user are listed first, followed by the amount of CPU time the job has used, the job status, and which Queue the job was submitted to.
+
+Note that the time used shown is total CPU time, not the walltime or "real" time, so if a job has run for 10 "real" or walltime minutes, but was running on 36 cores, this time will reflect 10 * 36 minutes, or 6 hours (ie. 6:00:00).
+
+The job status is listed as `C` for completed jobs, `R` for running jobs, and `Q` for jobs waiting for resources to become available. Jobs in the queued state are processed on a "first come, first served" basis, as soon as the requested resources become available.
+
+**IMPORTANT:** *You should request exactly the resources that your job needs to run in order to allow as many jobs as possible to run at a time. If your PBS directives request 10 nodes and 36 cores per node, the scheduler will reserve all of those resources for your job, even if it actually only runs on a single core/node, which would unnecessarily tie up resources that could be used by other users. Conversely, if you request 1 core on 1 node, but run a job that actually uses all 36 cores on the node, additional jobs may be scheduled to your node, causing an overuse of the resource, which in the best case will slow down all jobs on the node due to context switching, and in the worst case causing the node to crash.*
+
+The indicated queue will always be `batch` in our case. TORQUE has a mechanism to set up multiple queues with different priorities, resources, etc. But we currently have a single default queue named `batch`, and we utilize the PBS directive resource requests to allocate nodes.
+
+## Stopping/Deleting a submitted job
+
+A job that is currently in the running `R` or queued `Q` state can be stopped and/or removed from the submission queue with the `qdel` command followed by the ID of the job, as listed in the `qstat` listing.  For example, the following command will stop and remove the example job from above:
+```
+qdel 65.leviosa
+```
+
+Deleted jobs become listed as completed `C` in `qstat`, and the STDERR and STDOUT files will be placed into the folder that the job was submitted from.
