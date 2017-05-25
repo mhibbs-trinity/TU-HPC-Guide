@@ -132,7 +132,7 @@ qsub script_name.sh
 You should run this command from within your home directory (or a sub-folder in your home directory). Right after such a command is run, your job will be assigned a unique ID number, which can be important to know for later. For example, after running a script named run_keras_cifar10.sh, the job was assigned the ID 65:
 ```
 [mhibbs@leviosa ~]$ qsub run_keras_cifar10.sh
-65.leviosa.cs.trinity.edu
+65.leviosa
 ```
 
 When a job is completed, either due to finishing normally or because of early termination, the results of STDOUT and STDERR will be in two files in the directory the job was submitted from. In the above case, the job was given the name `cifar10_job` through PBS directives and received the ID of 65. So the STDOUT will be contained in a file named `cifar10_job.o65`, and the STDERR will be in a file named `cifar10_job.e65`. These files will be created even if no output occurs (the files will just be empty then).
